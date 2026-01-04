@@ -9,6 +9,22 @@ model: inherit
 
 Check deployment readiness. Output to `.claude/audits/AUDIT_INFRA.md`.
 
+## Status Block (Required)
+
+Every output MUST start with:
+```yaml
+---
+agent: infra-auditor
+status: COMPLETE | PARTIAL | SKIPPED | ERROR
+timestamp: [ISO timestamp]
+duration: [seconds]
+findings: [count]
+blockers: [count]
+errors: []
+skipped_checks: []
+---
+```
+
 ## Check
 
 **Environment**
@@ -83,5 +99,19 @@ grep -rn "Content-Security-Policy\|X-Frame" src
 **Issue:** No Content-Security-Policy configured
 **Fix:** Add CSP header in next.config.js or middleware
 ```
+
+## Execution Logging
+
+After completing, append to `.claude/audits/EXECUTION_LOG.md`:
+```
+| [timestamp] | infra-auditor | [status] | [duration] | [findings] | [errors] |
+```
+
+## Output Verification
+
+Before completing:
+1. Verify `.claude/audits/AUDIT_INFRA.md` was created
+2. Verify file has content beyond headers
+3. If no issues found, write "No infrastructure issues detected" (not empty file)
 
 Flag blockers clearly.

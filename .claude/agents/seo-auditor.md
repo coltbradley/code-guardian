@@ -9,6 +9,52 @@ model: inherit
 
 Analyze application for search engine optimization and discoverability. Output to `.claude/audits/AUDIT_SEO.md`.
 
+## Status Block (Required)
+
+Every output MUST start with:
+```yaml
+---
+agent: seo-auditor
+status: COMPLETE | PARTIAL | SKIPPED | ERROR
+timestamp: [ISO timestamp]
+duration: [seconds]
+findings: [count]
+framework_detected: [next.js-app | next.js-pages | spa | static | unknown]
+pages_scanned: [count]
+errors: []
+skipped_checks: []
+---
+```
+
+## Framework Detection
+
+First, detect the project structure:
+
+```bash
+# Next.js App Router
+ls -d src/app 2>/dev/null && echo "FRAMEWORK: Next.js App Router"
+ls -d app 2>/dev/null && echo "FRAMEWORK: Next.js App Router (root)"
+
+# Next.js Pages Router
+ls -d src/pages 2>/dev/null && echo "FRAMEWORK: Next.js Pages Router"
+ls -d pages 2>/dev/null && echo "FRAMEWORK: Next.js Pages Router (root)"
+
+# SPA / Static
+ls index.html 2>/dev/null && echo "FRAMEWORK: Static/SPA"
+ls public/index.html 2>/dev/null && echo "FRAMEWORK: CRA/SPA"
+
+# Check for meta framework
+grep -l "astro" package.json 2>/dev/null && echo "FRAMEWORK: Astro"
+grep -l "gatsby" package.json 2>/dev/null && echo "FRAMEWORK: Gatsby"
+grep -l "nuxt" package.json 2>/dev/null && echo "FRAMEWORK: Nuxt"
+```
+
+**Adjust patterns based on detection:**
+- **Next.js App Router:** Look for `metadata` exports in `page.tsx`
+- **Next.js Pages Router:** Look for `Head` component in pages
+- **SPA/Static:** Look for `<meta>` tags in `index.html`
+- **Unknown:** Use generic patterns, note "Framework not detected"
+
 ## Check
 
 **Meta Tags**
@@ -49,35 +95,83 @@ Analyze application for search engine optimization and discoverability. Output t
 - Alt text on images
 - Internal linking
 
-## Commands
+## Commands (Framework-Specific)
 
+### Next.js App Router
 ```bash
-# Find pages without meta tags
-grep -rL "title\|<title" src/app --include="*.tsx" | head -10
+# Find pages
+find src/app -name "page.tsx" -o -name "page.js" 2>/dev/null | head -20
+find app -name "page.tsx" -o -name "page.js" 2>/dev/null | head -20
 
+# Check for metadata exports
+grep -rn "export const metadata" src/app --include="*.tsx" --include="*.ts" 2>/dev/null | head -20
+grep -rn "export const metadata" app --include="*.tsx" --include="*.ts" 2>/dev/null | head -20
+
+# Check for generateMetadata function
+grep -rn "export.*generateMetadata" src/app app --include="*.tsx" --include="*.ts" 2>/dev/null | head -10
+```
+
+### Next.js Pages Router
+```bash
+# Find pages
+find src/pages pages -name "*.tsx" -o -name "*.js" 2>/dev/null | grep -v "_app\|_document\|api" | head -20
+
+# Check for Head component usage
+grep -rn "import.*Head.*from.*next/head" src/pages pages --include="*.tsx" --include="*.js" 2>/dev/null | head -20
+
+# Check for meta tags in Head
+grep -rn "<Head>" -A 5 src/pages pages --include="*.tsx" --include="*.js" 2>/dev/null | head -30
+```
+
+### SPA / Static / Generic
+```bash
+# Check index.html for meta tags
+grep -n "<title>\|<meta" index.html public/index.html 2>/dev/null | head -20
+
+# Check for helmet or react-helmet
+grep -rn "Helmet" src --include="*.tsx" --include="*.jsx" --include="*.js" 2>/dev/null | head -10
+
+# Check for document.title usage
+grep -rn "document.title" src --include="*.ts" --include="*.tsx" --include="*.js" 2>/dev/null | head -10
+```
+
+### All Frameworks
+```bash
 # Check for missing alt tags
-grep -rn "<img" src --include="*.tsx" | grep -v "alt=" | head -10
+grep -rn "<img" src --include="*.tsx" --include="*.jsx" --include="*.html" 2>/dev/null | grep -v "alt=" | head -10
 
 # Find sitemap
-ls -la public/sitemap.xml 2>/dev/null || echo "No sitemap found"
+ls -la public/sitemap.xml sitemap.xml 2>/dev/null || echo "SKIP: No sitemap found"
 
 # Check robots.txt
-cat public/robots.txt 2>/dev/null || echo "No robots.txt"
-
-# Find pages
-find src/app -name "page.tsx" 2>/dev/null | head -20
+cat public/robots.txt robots.txt 2>/dev/null || echo "SKIP: No robots.txt"
 
 # Check for structured data
-grep -rn "application/ld+json\|@type" src --include="*.tsx" | head -10
+grep -rn "application/ld+json\|@type" src --include="*.tsx" --include="*.jsx" --include="*.html" 2>/dev/null | head -10
 
 # Find OpenGraph config
-grep -rn "openGraph\|og:" src --include="*.tsx" --include="*.ts" | head -10
+grep -rn "openGraph\|og:" src --include="*.tsx" --include="*.ts" --include="*.html" 2>/dev/null | head -10
+
+# Check for Twitter cards
+grep -rn "twitter:" src --include="*.tsx" --include="*.ts" --include="*.html" 2>/dev/null | head -10
 ```
 
 ## Output
 
 ```markdown
 # SEO Audit
+
+---
+agent: seo-auditor
+status: [COMPLETE|PARTIAL|SKIPPED]
+timestamp: [ISO timestamp]
+duration: [X seconds]
+findings: [X]
+framework_detected: [framework]
+pages_scanned: [X]
+errors: [list any errors]
+skipped_checks: [list checks that couldn't run]
+---
 
 ## Summary
 | Category | Score | Issues |
@@ -89,6 +183,7 @@ grep -rn "openGraph\|og:" src --include="*.tsx" --include="*.ts" | head -10
 | Content | X/10 | X issues |
 
 **Overall SEO Score:** X/100
+**Framework:** [detected framework]
 
 ## Critical Issues
 
@@ -100,12 +195,27 @@ grep -rn "openGraph\|og:" src --include="*.tsx" --include="*.ts" | head -10
 - `src/app/page.tsx`
 - `src/app/about/page.tsx`
 - `src/app/products/page.tsx`
-**Fix:**
+**Fix (Next.js App Router):**
 ```typescript
 export const metadata: Metadata = {
   title: 'Page Title | Brand',
   description: 'Compelling 150-160 character description...',
 };
+```
+**Fix (Next.js Pages Router):**
+```typescript
+import Head from 'next/head';
+<Head>
+  <title>Page Title | Brand</title>
+  <meta name="description" content="Compelling description..." />
+</Head>
+```
+**Fix (SPA/Static):**
+```html
+<head>
+  <title>Page Title | Brand</title>
+  <meta name="description" content="Compelling description..." />
+</head>
 ```
 
 ### SEO-002: No Sitemap
@@ -222,5 +332,19 @@ Disallow: /  # This blocks everything!
 - **Facebook Sharing Debugger** - Test OG tags
 - **Twitter Card Validator** - Test Twitter cards
 ```
+
+## Execution Logging
+
+After completing, append to `.claude/audits/EXECUTION_LOG.md`:
+```
+| [timestamp] | seo-auditor | [status] | [duration] | [findings] | [errors] |
+```
+
+## Output Verification
+
+Before completing:
+1. Verify `.claude/audits/AUDIT_SEO.md` was created
+2. Verify file has content beyond headers
+3. If no issues found, write "No SEO issues detected" (not empty file)
 
 Focus on issues that affect search visibility. Include specific file locations and fixes.

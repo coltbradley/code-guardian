@@ -9,6 +9,50 @@ model: inherit
 
 Analyze application for performance bottlenecks. Output to `.claude/audits/AUDIT_PERF.md`.
 
+## Status Block (Required)
+
+Every output MUST start with:
+```yaml
+---
+agent: perf-auditor
+status: COMPLETE | PARTIAL | SKIPPED | ERROR
+timestamp: [ISO timestamp]
+duration: [seconds]
+findings: [count]
+framework_detected: [next.js | vite | webpack | cra | unknown]
+build_available: [true | false]
+errors: []
+skipped_checks: []
+---
+```
+
+## Prerequisites Check
+
+Before running analysis, detect environment:
+
+```bash
+# 1. Detect framework
+ls -la next.config.* 2>/dev/null && echo "FRAMEWORK: Next.js"
+ls -la vite.config.* 2>/dev/null && echo "FRAMEWORK: Vite"
+ls -la webpack.config.* 2>/dev/null && echo "FRAMEWORK: Webpack"
+ls -la craco.config.* 2>/dev/null && echo "FRAMEWORK: CRA"
+
+# 2. Check for build artifacts
+ls -d .next 2>/dev/null && echo "BUILD: .next exists"
+ls -d dist 2>/dev/null && echo "BUILD: dist exists"
+ls -d build 2>/dev/null && echo "BUILD: build exists"
+
+# 3. Check package manager
+ls package-lock.json 2>/dev/null && echo "PKG: npm"
+ls pnpm-lock.yaml 2>/dev/null && echo "PKG: pnpm"
+ls yarn.lock 2>/dev/null && echo "PKG: yarn"
+```
+
+**If prerequisites not met:**
+- No build directory: Run static code analysis only, note "Build artifacts not available"
+- Unknown framework: Use generic patterns, note "Framework not detected"
+- No package manager: Skip dependency analysis, note "No package manager detected"
+
 ## Check
 
 **Bundle & Loading**
@@ -45,29 +89,45 @@ Analyze application for performance bottlenecks. Output to `.claude/audits/AUDIT
 - No HTTP caching headers
 - Large API payloads
 
-## Commands
+## Commands (Framework-Specific)
 
+### Next.js
 ```bash
-# Build and analyze bundle
-npm run build 2>&1 | tail -30
+# Check bundle size
+cat .next/build-manifest.json 2>/dev/null | head -50 || echo "SKIP: No Next.js build"
 
-# Check bundle size (if next.js)
-cat .next/build-manifest.json 2>/dev/null | head -50
+# Analyze pages
+ls -la .next/static/chunks/*.js 2>/dev/null | head -10 || echo "SKIP: No chunks"
+```
 
-# Find large files
-find src -name "*.ts" -o -name "*.tsx" | xargs wc -l | sort -n | tail -10
+### Vite
+```bash
+# Check bundle size
+ls -la dist/assets/*.js 2>/dev/null | head -10 || echo "SKIP: No Vite build"
+
+# Check for source maps (should not be in prod)
+find dist -name "*.map" 2>/dev/null | head -5
+```
+
+### Generic (All Frameworks)
+```bash
+# Find large source files
+find src -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" 2>/dev/null | xargs wc -l 2>/dev/null | sort -n | tail -10
 
 # Find components without memo
-grep -rn "export function\|export const" src/components --include="*.tsx" | grep -v "memo\|React.memo"
+grep -rn "export function\|export const" src --include="*.tsx" --include="*.jsx" 2>/dev/null | grep -v "memo\|React.memo" | head -10
 
 # Find missing useCallback/useMemo
-grep -rn "onClick={\s*(" src --include="*.tsx" | head -10
+grep -rn "onClick={\s*(" src --include="*.tsx" --include="*.jsx" 2>/dev/null | head -10
 
 # Find console.time/performance markers
-grep -rn "console.time\|performance.mark" src --include="*.ts"
+grep -rn "console.time\|performance.mark" src --include="*.ts" --include="*.js" 2>/dev/null
 
 # Image analysis
-find public -name "*.png" -o -name "*.jpg" | xargs du -sh 2>/dev/null | sort -rh | head -10
+find . -path ./node_modules -prune -o \( -name "*.png" -o -name "*.jpg" -o -name "*.jpeg" \) -print 2>/dev/null | head -20
+
+# Check for heavy dependencies
+grep -E "moment|lodash|jquery|@material-ui" package.json 2>/dev/null && echo "WARNING: Heavy dependencies detected"
 ```
 
 ## Output
@@ -75,15 +135,28 @@ find public -name "*.png" -o -name "*.jpg" | xargs du -sh 2>/dev/null | sort -rh
 ```markdown
 # Performance Audit
 
+---
+agent: perf-auditor
+status: [COMPLETE|PARTIAL|SKIPPED]
+timestamp: [ISO timestamp]
+duration: [X seconds]
+findings: [X]
+framework_detected: [framework]
+build_available: [true|false]
+errors: [list any errors]
+skipped_checks: [list checks that couldn't run]
+---
+
 ## Summary
 | Metric | Current | Target | Status |
 |--------|---------|--------|--------|
-| Initial JS | X KB | <500KB | PASS/FAIL |
-| LCP | X.Xs | <2.5s | PASS/FAIL |
-| FID | Xms | <100ms | PASS/FAIL |
-| CLS | X.XX | <0.1 | PASS/FAIL |
+| Initial JS | X KB | <500KB | PASS/FAIL/UNKNOWN |
+| LCP | X.Xs | <2.5s | PASS/FAIL/UNKNOWN |
+| FID | Xms | <100ms | PASS/FAIL/UNKNOWN |
+| CLS | X.XX | <0.1 | PASS/FAIL/UNKNOWN |
 
 **Performance Score:** X/100 (estimated)
+**Analysis Mode:** Full (with build) | Static (code only)
 
 ## Critical Issues
 
@@ -184,5 +257,19 @@ const onSubmit = useCallback(() => handleSubmit(data), [data]);
 - **Lighthouse:** `npx lighthouse https://your-site.com`
 - **Query profiling:** Enable slow query log in database
 ```
+
+## Execution Logging
+
+After completing, append to `.claude/audits/EXECUTION_LOG.md`:
+```
+| [timestamp] | perf-auditor | [status] | [duration] | [findings] | [errors] |
+```
+
+## Output Verification
+
+Before completing:
+1. Verify `.claude/audits/AUDIT_PERF.md` was created
+2. Verify file has content beyond headers
+3. If no issues found, write "No performance issues detected" (not empty file)
 
 Focus on issues with measurable impact. Include before/after expectations for fixes.

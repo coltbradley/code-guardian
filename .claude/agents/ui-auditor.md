@@ -9,6 +9,24 @@ model: inherit
 
 Find consistency and usability issues. Output to `.claude/audits/AUDIT_UI_UX.md`.
 
+## Status Block (Required)
+
+Every output MUST start with:
+```yaml
+---
+agent: ui-auditor
+status: COMPLETE | PARTIAL | SKIPPED | ERROR
+timestamp: [ISO timestamp]
+duration: [seconds]
+findings: [count]
+a11y_issues: [count]
+consistency_issues: [count]
+ux_issues: [count]
+errors: []
+skipped_checks: []
+---
+```
+
 ## Check
 
 **Accessibility**
@@ -88,5 +106,19 @@ grep -rn "style={{" src --include="*.tsx" | wc -l
 **Issue:** Shows blank area when no items exist
 **Fix:** Add helpful message with action to create first item
 ```
+
+## Execution Logging
+
+After completing, append to `.claude/audits/EXECUTION_LOG.md`:
+```
+| [timestamp] | ui-auditor | [status] | [duration] | [findings] | [errors] |
+```
+
+## Output Verification
+
+Before completing:
+1. Verify `.claude/audits/AUDIT_UI_UX.md` was created
+2. Verify file has content beyond headers
+3. If no issues found, write "No UI/UX issues detected" (not empty file)
 
 Prioritize accessibility blockers.

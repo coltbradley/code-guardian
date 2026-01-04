@@ -4,12 +4,12 @@ You're the orchestrator. Spawn subagents via `Task()` for focused work.
 
 ## Agents (24 Total)
 
-### Audit Agents (11)
+### Audit Agents (11) - NON-OVERLAPPING SCOPE
 | Type | Prompt | Does |
 |------|--------|------|
-| `bug-auditor` | `.claude/agents/bug-auditor.md` | Security & bugs |
-| `code-auditor` | `.claude/agents/code-auditor.md` | Code quality |
-| `security-auditor` | `.claude/agents/security-auditor.md` | OWASP deep scan |
+| `bug-auditor` | `.claude/agents/bug-auditor.md` | Runtime bugs (NOT security) |
+| `code-auditor` | `.claude/agents/code-auditor.md` | Code quality (NOT security/bugs) |
+| `security-auditor` | `.claude/agents/security-auditor.md` | ALL security (single authority) |
 | `doc-auditor` | `.claude/agents/doc-auditor.md` | Documentation |
 | `infra-auditor` | `.claude/agents/infra-auditor.md` | Config/infra |
 | `ui-auditor` | `.claude/agents/ui-auditor.md` | UI/UX & a11y |
@@ -94,9 +94,9 @@ All go to `.claude/audits/`:
 
 | File | Source |
 |------|--------|
-| `AUDIT_SECURITY.md` | bug-auditor |
-| `AUDIT_CODE.md` | code-auditor |
-| `AUDIT_SECURITY_DEEP.md` | security-auditor |
+| `AUDIT_SECURITY.md` | security-auditor (SINGLE security authority) |
+| `AUDIT_BUGS.md` | bug-auditor (runtime bugs only) |
+| `AUDIT_CODE.md` | code-auditor (quality only) |
 | `AUDIT_DOCS.md` | doc-auditor |
 | `AUDIT_INFRA.md` | infra-auditor |
 | `AUDIT_UI_UX.md` | ui-auditor |
@@ -107,11 +107,27 @@ All go to `.claude/audits/`:
 | `API_TEST_REPORT.md` | api-tester |
 | `DEPLOY_CHECK.md` | deploy-checker |
 | `ENV_REPORT.md` | env-validator |
-| `FIXES.md` | fix-planner |
+| `FIXES.md` | fix-planner (with deduplication) |
 | `TEST_REPORT.md` | test-runner |
 | `AUDIT_BROWSER_QA.md` | browser-qa-agent |
 | `QA_SESSION_LOG.md` | fullstack-qa-orchestrator |
 | `QA_COMPLETE.md` | fullstack-qa-orchestrator |
+| `EXECUTION_LOG.md` | All agents (status tracking) |
+
+## Agent Status Protocol
+
+Every agent output MUST start with a status block:
+```yaml
+---
+agent: [agent-name]
+status: COMPLETE | PARTIAL | SKIPPED | ERROR
+timestamp: [ISO timestamp]
+duration: [seconds]
+findings: [count]
+errors: []
+skipped_checks: []
+---
+```
 
 ---
 

@@ -9,6 +9,23 @@ model: inherit
 
 Find documentation gaps. Output to `.claude/audits/AUDIT_DOCS.md`.
 
+## Status Block (Required)
+
+Every output MUST start with:
+```yaml
+---
+agent: doc-auditor
+status: COMPLETE | PARTIAL | SKIPPED | ERROR
+timestamp: [ISO timestamp]
+duration: [seconds]
+findings: [count]
+functions_undocumented: [count]
+todos_found: [count]
+errors: []
+skipped_checks: []
+---
+```
+
 ## Check
 
 **Code Comments**
@@ -86,3 +103,17 @@ ls -la README* CONTRIBUTING* CHANGELOG*
 2. Create API.md with endpoint documentation
 3. Address X high-priority TODOs
 ```
+
+## Execution Logging
+
+After completing, append to `.claude/audits/EXECUTION_LOG.md`:
+```
+| [timestamp] | doc-auditor | [status] | [duration] | [findings] | [errors] |
+```
+
+## Output Verification
+
+Before completing:
+1. Verify `.claude/audits/AUDIT_DOCS.md` was created
+2. Verify file has content beyond headers
+3. If no issues found, write "No documentation issues detected" (not empty file)
