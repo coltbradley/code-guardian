@@ -52,7 +52,7 @@ function install() {
     const auditsDir = path.join(cwd, '.claude', 'audits');
 
     // Find package directories
-    const packageAgentDir = path.join(__dirname, '..', '.claude', 'agents');
+    const packageAgentDir = path.join(__dirname, '..', 'agents');
     const packageWorkflowDir = path.join(__dirname, '..', 'workflows');
 
     if (!fs.existsSync(packageAgentDir)) {
@@ -65,8 +65,11 @@ function install() {
     fs.mkdirSync(workflowTargetDir, { recursive: true });
     fs.mkdirSync(auditsDir, { recursive: true });
 
-    console.log('\n  Claude Code Agents v2.0\n');
+    console.log('\n  Claude Code Agents v3.0\n');
     console.log('  Installing 24 agents + 6 workflows\n');
+    console.log('  Tip: Install as a plugin instead for automatic updates:');
+    console.log('    /plugin marketplace add undeadlist/claude-code-agents');
+    console.log('    /plugin install claude-code-agents@community\n');
 
     let agentsInstalled = 0;
     let agentsSkipped = 0;

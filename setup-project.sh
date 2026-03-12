@@ -88,7 +88,7 @@ if [ "$USE_CURL" = true ]; then
         "architect-reviewer"
     )
 
-    BASE_URL="https://raw.githubusercontent.com/undeadlist/claude-code-agents/main/.claude/agents"
+    BASE_URL="https://raw.githubusercontent.com/undeadlist/claude-code-agents/main/agents"
 
     for agent in "${AGENTS[@]}"; do
         curl -sL "$BASE_URL/$agent.md" -o ".claude/agents/$agent.md" 2>/dev/null || \
@@ -96,7 +96,7 @@ if [ "$USE_CURL" = true ]; then
     done
 else
     # Copy from cloned repo
-    cp "$TEMP_DIR/.claude/agents/"*.md .claude/agents/ 2>/dev/null || true
+    cp "$TEMP_DIR/agents/"*.md .claude/agents/ 2>/dev/null || true
     rm -rf "$TEMP_DIR"
 fi
 

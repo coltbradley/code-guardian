@@ -2,55 +2,58 @@
 
 You're the orchestrator. Spawn subagents via `Task()` for focused work.
 
+> **Plugin mode:** When installed as a plugin, agents and skills are available natively.
+> Use `/full-audit`, `/pre-commit`, `/pre-deploy`, `/new-feature`, `/bug-fix`, `/release-prep` skills.
+
 ## Agents (24 Total)
 
 ### Audit Agents (11) - NON-OVERLAPPING SCOPE
 | Type | Prompt | Does |
 |------|--------|------|
-| `bug-auditor` | `.claude/agents/bug-auditor.md` | Runtime bugs (NOT security) |
-| `code-auditor` | `.claude/agents/code-auditor.md` | Code quality (NOT security/bugs) |
-| `security-auditor` | `.claude/agents/security-auditor.md` | ALL security (single authority) |
-| `doc-auditor` | `.claude/agents/doc-auditor.md` | Documentation |
-| `infra-auditor` | `.claude/agents/infra-auditor.md` | Config/infra |
-| `ui-auditor` | `.claude/agents/ui-auditor.md` | UI/UX & a11y |
-| `db-auditor` | `.claude/agents/db-auditor.md` | Database & queries |
-| `perf-auditor` | `.claude/agents/perf-auditor.md` | Performance |
-| `dep-auditor` | `.claude/agents/dep-auditor.md` | Dependencies |
-| `seo-auditor` | `.claude/agents/seo-auditor.md` | SEO & meta tags |
-| `api-tester` | `.claude/agents/api-tester.md` | API validation |
+| `bug-auditor` | `agents/bug-auditor.md` | Runtime bugs (NOT security) |
+| `code-auditor` | `agents/code-auditor.md` | Code quality (NOT security/bugs) |
+| `security-auditor` | `agents/security-auditor.md` | ALL security (single authority) |
+| `doc-auditor` | `agents/doc-auditor.md` | Documentation |
+| `infra-auditor` | `agents/infra-auditor.md` | Config/infra |
+| `ui-auditor` | `agents/ui-auditor.md` | UI/UX & a11y |
+| `db-auditor` | `agents/db-auditor.md` | Database & queries |
+| `perf-auditor` | `agents/perf-auditor.md` | Performance |
+| `dep-auditor` | `agents/dep-auditor.md` | Dependencies |
+| `seo-auditor` | `agents/seo-auditor.md` | SEO & meta tags |
+| `api-tester` | `agents/api-tester.md` | API validation |
 
 ### Fix/Implement Agents (4)
 | Type | Prompt | Does |
 |------|--------|------|
-| `fix-planner` | `.claude/agents/fix-planner.md` | Prioritize fixes |
-| `code-fixer` | `.claude/agents/code-fixer.md` | Implement fixes |
-| `test-runner` | `.claude/agents/test-runner.md` | Run tests |
-| `test-writer` | `.claude/agents/test-writer.md` | Generate tests |
+| `fix-planner` | `agents/fix-planner.md` | Prioritize fixes |
+| `code-fixer` | `agents/code-fixer.md` | Implement fixes |
+| `test-runner` | `agents/test-runner.md` | Run tests |
+| `test-writer` | `agents/test-writer.md` | Generate tests |
 
 ### Browser QA Agents (4)
 | Type | Prompt | Does |
 |------|--------|------|
-| `browser-qa-agent` | `.claude/agents/browser-qa-agent.md` | Chrome UI testing |
-| `fullstack-qa-orchestrator` | `.claude/agents/fullstack-qa-orchestrator.md` | Find-fix-verify loop |
-| `console-monitor` | `.claude/agents/console-monitor.md` | Real-time console |
-| `visual-diff` | `.claude/agents/visual-diff.md` | Screenshot comparison |
+| `browser-qa-agent` | `agents/browser-qa-agent.md` | Chrome UI testing |
+| `fullstack-qa-orchestrator` | `agents/fullstack-qa-orchestrator.md` | Find-fix-verify loop |
+| `console-monitor` | `agents/console-monitor.md` | Real-time console |
+| `visual-diff` | `agents/visual-diff.md` | Screenshot comparison |
 
 ### Deploy Agents (2)
 | Type | Prompt | Does |
 |------|--------|------|
-| `deploy-checker` | `.claude/agents/deploy-checker.md` | Pre-deploy validation |
-| `env-validator` | `.claude/agents/env-validator.md` | Environment config |
+| `deploy-checker` | `agents/deploy-checker.md` | Pre-deploy validation |
+| `env-validator` | `agents/env-validator.md` | Environment config |
 
 ### Utility Agents (2)
 | Type | Prompt | Does |
 |------|--------|------|
-| `pr-writer` | `.claude/agents/pr-writer.md` | PR descriptions |
-| `seed-generator` | `.claude/agents/seed-generator.md` | Test data |
+| `pr-writer` | `agents/pr-writer.md` | PR descriptions |
+| `seed-generator` | `agents/seed-generator.md` | Test data |
 
 ### Supervisors (1)
 | Type | Prompt | Does |
 |------|--------|------|
-| `architect-reviewer` | `.claude/agents/architect-reviewer.md` | Final approval |
+| `architect-reviewer` | `agents/architect-reviewer.md` | Final approval |
 
 ## Spawning
 
@@ -69,9 +72,9 @@ Task(subagent_type="db-auditor", prompt="...", description="Database")
 
 **Sequential:** Wait for result, then next Task.
 
-## Workflows
+## Workflows / Skills
 
-See `workflows/` directory for detailed workflow definitions.
+Available as slash commands when installed as a plugin, or see `workflows/` for details.
 
 | Workflow | Purpose | Agents |
 |----------|---------|--------|

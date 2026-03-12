@@ -67,7 +67,7 @@ AGENTS=(
 
 for agent in "${AGENTS[@]}"; do
     echo "   -> $agent"
-    curl -sL "${REPO_URL}/raw/${BRANCH}/.claude/agents/${agent}" -o ".claude/agents/${agent}"
+    curl -sL "${REPO_URL}/raw/${BRANCH}/agents/${agent}" -o ".claude/agents/${agent}"
 done
 
 # Download workflow files (6 total)
@@ -102,6 +102,10 @@ echo "Quick start:"
 echo "   claude \"Run full-audit workflow on src/\""
 echo "   claude \"Run pre-commit workflow\""
 echo "   claude \"Run pre-deploy workflow\""
+echo ""
+echo "Tip: Install as a plugin instead for automatic updates:"
+echo "   /plugin marketplace add undeadlist/claude-code-agents"
+echo "   /plugin install claude-code-agents@community"
 echo ""
 echo "Docs: https://github.com/undeadlist/claude-code-agents"
 echo "Built by UndeadList: https://undeadlist.com"

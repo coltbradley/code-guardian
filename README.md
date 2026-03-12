@@ -28,65 +28,85 @@ This workflow package gives you all of that via Claude Code subagents, with stri
 
 ```
 claude-code-agents/
-├── .claude/
-│   └── agents/
-│       ├── # AUDIT AGENTS (11 - run in parallel)
-│       ├── code-auditor.md         # Code quality, DRY, complexity
-│       ├── bug-auditor.md          # Security vulns, auth gaps
-│       ├── security-auditor.md     # OWASP deep scan
-│       ├── doc-auditor.md          # Documentation gaps
-│       ├── infra-auditor.md        # Config, env vars, headers
-│       ├── ui-auditor.md           # Accessibility, UX
-│       ├── db-auditor.md           # Database, N+1, indexes
-│       ├── perf-auditor.md         # Performance, bundle size
-│       ├── dep-auditor.md          # Dependencies, vulnerabilities
-│       ├── seo-auditor.md          # SEO, meta tags, OpenGraph
-│       ├── api-tester.md           # API endpoint testing
-│       │
-│       ├── # FIX/IMPLEMENT AGENTS (4)
-│       ├── fix-planner.md          # Prioritizes findings into FIXES.md
-│       ├── code-fixer.md           # Implements fixes
-│       ├── test-runner.md          # Validates fixes
-│       ├── test-writer.md          # Auto-generates tests
-│       │
-│       ├── # BROWSER AGENTS (4 - Chrome integration)
-│       ├── browser-qa-agent.md     # Navigates UI, finds console errors
-│       ├── fullstack-qa-orchestrator.md  # Find → Fix → Verify loop
-│       ├── console-monitor.md      # Real-time console watching
-│       ├── visual-diff.md          # Screenshot comparison
-│       │
-│       ├── # DEPLOY AGENTS (2)
-│       ├── deploy-checker.md       # Pre-deployment validation
-│       ├── env-validator.md        # Environment configuration
-│       │
-│       ├── # UTILITY AGENTS (2)
-│       ├── pr-writer.md            # PR description generator
-│       ├── seed-generator.md       # Test data creation
-│       │
-│       └── # SUPERVISORS (1)
-│       └── architect-reviewer.md   # Oversees until production-ready
+├── .claude-plugin/
+│   ├── plugin.json                 # Plugin manifest
+│   └── marketplace.json            # Marketplace config
 │
-├── workflows/                      # Predefined agent chains
-│   ├── pre-commit.md               # Before committing
-│   ├── pre-deploy.md               # Before deployment
-│   ├── full-audit.md               # Complete audit suite
-│   ├── new-feature.md              # Test-first development
-│   ├── bug-fix.md                  # Bug fix with regression prevention
-│   └── release-prep.md             # Release preparation
+├── agents/                         # 24 agent definitions
+│   ├── # AUDIT AGENTS (11 - run in parallel)
+│   ├── code-auditor.md             # Code quality, DRY, complexity
+│   ├── bug-auditor.md              # Runtime bugs, auth gaps
+│   ├── security-auditor.md         # OWASP deep scan
+│   ├── doc-auditor.md              # Documentation gaps
+│   ├── infra-auditor.md            # Config, env vars, headers
+│   ├── ui-auditor.md               # Accessibility, UX
+│   ├── db-auditor.md               # Database, N+1, indexes
+│   ├── perf-auditor.md             # Performance, bundle size
+│   ├── dep-auditor.md              # Dependencies, vulnerabilities
+│   ├── seo-auditor.md              # SEO, meta tags, OpenGraph
+│   ├── api-tester.md               # API endpoint testing
+│   ├── # FIX/IMPLEMENT AGENTS (4)
+│   ├── fix-planner.md              # Prioritizes findings into FIXES.md
+│   ├── code-fixer.md               # Implements fixes
+│   ├── test-runner.md              # Validates fixes
+│   ├── test-writer.md              # Auto-generates tests
+│   ├── # BROWSER AGENTS (4 - Chrome integration)
+│   ├── browser-qa-agent.md         # Navigates UI, finds console errors
+│   ├── fullstack-qa-orchestrator.md  # Find → Fix → Verify loop
+│   ├── console-monitor.md          # Real-time console watching
+│   ├── visual-diff.md              # Screenshot comparison
+│   ├── # DEPLOY AGENTS (2)
+│   ├── deploy-checker.md           # Pre-deployment validation
+│   ├── env-validator.md            # Environment configuration
+│   ├── # UTILITY AGENTS (2)
+│   ├── pr-writer.md                # PR description generator
+│   ├── seed-generator.md           # Test data creation
+│   └── # SUPERVISORS (1)
+│   └── architect-reviewer.md       # Oversees until production-ready
 │
-├── CLAUDE.md.template              # Project config (customize per project)
+├── skills/                         # 6 workflow skills (slash commands)
+│   ├── full-audit.md               # /full-audit
+│   ├── pre-commit.md               # /pre-commit
+│   ├── pre-deploy.md               # /pre-deploy
+│   ├── new-feature.md              # /new-feature
+│   ├── bug-fix.md                  # /bug-fix
+│   └── release-prep.md             # /release-prep
+│
+├── workflows/                      # Detailed workflow documentation
+│   ├── pre-commit.md
+│   ├── pre-deploy.md
+│   ├── full-audit.md
+│   ├── new-feature.md
+│   ├── bug-fix.md
+│   └── release-prep.md
+│
+├── CLAUDE.md                       # Orchestrator instructions
 ├── setup-project.sh                # One command setup for new projects
-├── install.sh                      # Quick agent install
+├── install.sh                      # Quick agent install (legacy)
 └── README.md
 ```
 
-**Total: 24 agents + 6 workflows**
+**Total: 24 agents + 6 workflow skills**
 
 ---
 
 ## Quick Start
 
-### Installation
+### Install as Plugin (Recommended)
+
+Install once, use across all projects. No per-project file copying needed.
+
+```bash
+# In Claude Code:
+/plugin marketplace add undeadlist/claude-code-agents
+/plugin install claude-code-agents@community
+```
+
+All 24 agents and 6 workflow skills become natively available. Use skills like `/full-audit`, `/pre-commit`, `/pre-deploy`, etc.
+
+### Alternative Installation (Per-Project)
+
+If you prefer per-project installation:
 
 ```bash
 # Option A: Full setup (creates CLAUDE.md, detects stack)
@@ -99,11 +119,7 @@ curl -s https://undeadlist.com/agents/install.sh | bash
 npx claude-code-agents
 ```
 
-This creates:
-- `.claude/agents/` with all 24 agent definitions
-- `.claude/audits/` for generated reports (gitignored)
-- `CLAUDE.md` with your project config
-- `workflows/` with predefined agent chains
+This copies agents into your project's `.claude/agents/` directory.
 
 ---
 
@@ -416,6 +432,13 @@ git diff
 
 ## Uninstall
 
+### Plugin
+```bash
+# In Claude Code:
+/plugin uninstall claude-code-agents
+```
+
+### Per-Project Install
 ```bash
 # Option A: One-liner (recommended)
 curl -s https://raw.githubusercontent.com/undeadlist/claude-code-agents/main/uninstall.sh | bash

@@ -1,0 +1,19 @@
+{
+  "marketplace": "community",
+  "category": "development-tools",
+  "tags": [
+    "audit",
+    "security",
+    "code-quality",
+    "testing",
+    "deployment",
+    "qa",
+    "solo-dev"
+  ],
+  "pricing": "free",
+  "changelog": {
+    "3.0.0": "Plugin format - natively callable agents without per-project installation",
+    "2.0.0": "24 agents + 6 workflows, status tracking, non-overlapping scope",
+    "1.0.0": "Initial release"
+  }
+}
