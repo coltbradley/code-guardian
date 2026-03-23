@@ -1,9 +1,12 @@
 {
-  "marketplace": "community",
-  "category": "code-quality",
-  "tags": ["audit", "code-review", "non-programmer", "vibe-coding", "guardrails", "security"],
-  "pricing": "free",
-  "changelog": {
-    "1.0.0": "Initial release — 12 agents, 8 skills, automated hooks"
-  }
+  "name": "code-guardian-plugins",
+  "owner": { "name": "Colt Bradley" },
+  "plugins": [
+    {
+      "name": "code-guardian",
+      "source": ".",
+      "description": "Code-agnostic guardrails for non-programmers building with AI tools",
+      "version": "1.0.0"
+    }
+  ]
 }
