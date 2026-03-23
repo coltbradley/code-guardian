@@ -8,9 +8,5 @@
   },
   "license": "MIT",
   "repository": "https://github.com/coltbradley/code-guardian",
-  "keywords": ["audit", "code-review", "non-programmer", "vibe-coding", "guardrails", "security"],
-  "agents": "agents/",
-  "skills": "skills/",
-  "hooks": "hooks/hooks.json",
-  "minClaudeCodeVersion": "1.0.0"
+  "keywords": ["audit", "code-review", "non-programmer", "vibe-coding", "guardrails", "security"]
 }
