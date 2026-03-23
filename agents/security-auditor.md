@@ -29,9 +29,9 @@ agent: security-auditor
 status: COMPLETE | PARTIAL | SKIPPED | ERROR
 timestamp: [ISO timestamp]
 findings: [count]
-critical: [count]
-important: [count]
-minor: [count]
+critical_count: [count]
+important_count: [count]
+minor_count: [count]
 ---
 ```
 

@@ -33,6 +33,9 @@ status: COMPLETE | PARTIAL | ERROR
 timestamp: [ISO timestamp]
 duration: [seconds]
 findings: [count]
+critical_count: [count]
+important_count: [count]
+minor_count: [count]
 bus_factor_score: [1-10]
 errors: []
 ---
