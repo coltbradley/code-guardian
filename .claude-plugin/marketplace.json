@@ -5,10 +5,7 @@
     {
       "name": "code-guardian",
       "description": "Code-agnostic guardrails for non-programmers building with AI tools",
-      "source": {
-        "source": "url",
-        "url": "https://github.com/coltbradley/code-guardian.git"
-      }
+      "source": "./"
     }
   ]
 }
