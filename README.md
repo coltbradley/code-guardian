@@ -54,6 +54,7 @@ claude --plugin-dir /path/to/code-guardian
 | `health-report` | Weekly or on-demand status check | Red / yellow / green dashboard across all audit dimensions |
 | `compare` | After a batch of changes | Compares current audit snapshot to a previous one to surface regressions |
 | `language-advisor` | Before starting a new project | Recommends the right language and framework given your goals and constraints |
+| `guard` | When you want the main menu | Entry point — run with no arguments for help, or with a command name to dispatch |
 
 ---
 

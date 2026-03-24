@@ -1,7 +1,7 @@
 {
   "name": "code-guardian",
   "version": "1.0.0",
-  "description": "Code-agnostic guardrails for non-programmers building with AI tools. 9 specialist auditors + 8 workflow skills that report in plain English.",
+  "description": "Code-agnostic guardrails for non-programmers building with AI tools. 9 specialist auditors + 9 workflow skills that report in plain English.",
   "author": {
     "name": "Colt Bradley",
     "url": "https://github.com/coltbradley"

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # change-size-nudge.sh - Advisory PostToolUse hook (always exits 0).
 # Reads JSON from stdin and nudges the user when many files have changed.
 
