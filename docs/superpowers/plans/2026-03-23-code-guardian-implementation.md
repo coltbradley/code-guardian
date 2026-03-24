@@ -683,7 +683,9 @@ if [ -n "$FOUND" ]; then
   echo "🔴 BLOCKED: Possible secrets detected in staged files:"
   echo -e "$FOUND"
   echo ""
-  echo "If these are false positives (test data, examples), you can bypass with --no-verify."
+  echo "If these are false positives (test data, examples), move the values to a"
+  echo ".env.example file with placeholders, or rename the file with a .sample extension."
+  echo "WARNING: Do not use --no-verify — it disables ALL pre-commit hooks, not just this one."
   echo "If these are real secrets, remove them and use environment variables instead."
   exit 2
 fi
