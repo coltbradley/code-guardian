@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # check-env-files.sh - Blocks committing .env files with real secrets.
 # Allows .env.example, .env.sample, and .env.template variants.
 # Exits with code 2 to block the commit.
@@ -34,20 +35,20 @@ while IFS= read -r -d '' FILE; do
 done < <(git diff --cached --name-only -z 2>/dev/null)
 
 if [ "$BLOCKED" -eq 1 ]; then
-  echo ""
-  echo "BLOCKED: Attempted to commit .env file(s) containing potential secrets."
-  echo ""
-  echo "Blocked files:"
-  printf "%b" "$BLOCKED_FILES"
-  echo ""
-  echo "Guidance:"
-  echo "  - Add these files to .gitignore to prevent accidental commits."
-  echo "  - Commit a .env.example file with placeholder values instead:"
-  echo "      cp .env .env.example"
-  echo "      # Replace real values with placeholders, then:"
-  echo "      git add .env.example"
-  echo "  - Use a secrets manager or CI/CD environment variables for real values."
-  echo ""
+  echo "" >&2
+  echo "BLOCKED: Attempted to commit .env file(s) containing potential secrets." >&2
+  echo "" >&2
+  echo "Blocked files:" >&2
+  printf "%b" "$BLOCKED_FILES" >&2
+  echo "" >&2
+  echo "Guidance:" >&2
+  echo "  - Add these files to .gitignore to prevent accidental commits." >&2
+  echo "  - Commit a .env.example file with placeholder values instead:" >&2
+  echo "      cp .env .env.example" >&2
+  echo "      # Replace real values with placeholders, then:" >&2
+  echo "      git add .env.example" >&2
+  echo "  - Use a secrets manager or CI/CD environment variables for real values." >&2
+  echo "" >&2
   exit 2
 fi
 

@@ -76,51 +76,51 @@ BLOCKED=0
 
 if [ "$SECRETS_FOUND" -eq 1 ]; then
   BLOCKED=1
-  echo ""
-  echo "BLOCKED: Potential secrets detected in staged files."
-  echo ""
-  echo "Flagged files:"
-  printf "%b" "$SECRET_FILES"
-  echo ""
-  echo "Guidance:"
-  echo "  - Remove secrets from source files before committing."
-  echo "  - Use environment variables or a secrets manager instead."
-  echo "  - If this is a false positive, add the file to .gitignore"
-  echo "    or use a .env.example file with placeholder values."
+  echo "" >&2
+  echo "BLOCKED: Potential secrets detected in staged files." >&2
+  echo "" >&2
+  echo "Flagged files:" >&2
+  printf "%b" "$SECRET_FILES" >&2
+  echo "" >&2
+  echo "Guidance:" >&2
+  echo "  - Remove secrets from source files before committing." >&2
+  echo "  - Use environment variables or a secrets manager instead." >&2
+  echo "  - If this is a false positive, add the file to .gitignore" >&2
+  echo "    or use a .env.example file with placeholder values." >&2
 fi
 
 if [ "$ENV_BLOCKED" -eq 1 ]; then
   BLOCKED=1
-  echo ""
-  echo "BLOCKED: Attempted to commit .env file(s) containing potential secrets."
-  echo ""
-  echo "Blocked files:"
-  printf "%b" "$ENV_FILES"
-  echo ""
-  echo "Guidance:"
-  echo "  - Add these files to .gitignore to prevent accidental commits."
-  echo "  - Commit a .env.example file with placeholder values instead:"
-  echo "      cp .env .env.example"
-  echo "      # Replace real values with placeholders, then:"
-  echo "      git add .env.example"
+  echo "" >&2
+  echo "BLOCKED: Attempted to commit .env file(s) containing potential secrets." >&2
+  echo "" >&2
+  echo "Blocked files:" >&2
+  printf "%b" "$ENV_FILES" >&2
+  echo "" >&2
+  echo "Guidance:" >&2
+  echo "  - Add these files to .gitignore to prevent accidental commits." >&2
+  echo "  - Commit a .env.example file with placeholder values instead:" >&2
+  echo "      cp .env .env.example" >&2
+  echo "      # Replace real values with placeholders, then:" >&2
+  echo "      git add .env.example" >&2
 fi
 
 if [ "$LARGE_BLOCKED" -eq 1 ]; then
   BLOCKED=1
-  echo ""
-  echo "BLOCKED: One or more staged files exceed the 500KB size limit."
-  echo ""
-  echo "Oversized files:"
-  printf "%b" "$LARGE_FILES"
-  echo ""
-  echo "Guidance:"
-  echo "  - For large binary assets, use Git LFS: git lfs track '*.extension'"
-  echo "  - For generated or build artifacts, add the file to .gitignore."
-  echo "  - For large data files, consider external storage (S3, Google Drive)."
+  echo "" >&2
+  echo "BLOCKED: One or more staged files exceed the 500KB size limit." >&2
+  echo "" >&2
+  echo "Oversized files:" >&2
+  printf "%b" "$LARGE_FILES" >&2
+  echo "" >&2
+  echo "Guidance:" >&2
+  echo "  - For large binary assets, use Git LFS: git lfs track '*.extension'" >&2
+  echo "  - For generated or build artifacts, add the file to .gitignore." >&2
+  echo "  - For large data files, consider external storage (S3, Google Drive)." >&2
 fi
 
 if [ "$BLOCKED" -eq 1 ]; then
-  echo ""
+  echo "" >&2
   exit 2
 fi
 

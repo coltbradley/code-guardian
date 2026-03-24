@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # check-large-files.sh - Blocks staged files larger than 500KB.
 # Exits with code 2 to block the commit.
 
@@ -21,20 +22,20 @@ while IFS= read -r -d '' FILE; do
 done < <(git diff --cached --name-only -z 2>/dev/null)
 
 if [ "$BLOCKED" -eq 1 ]; then
-  echo ""
-  echo "BLOCKED: One or more staged files exceed the 500KB size limit."
-  echo ""
-  echo "Oversized files:"
-  printf "%b" "$BLOCKED_FILES"
-  echo ""
-  echo "Guidance:"
-  echo "  - For large binary assets (images, models, datasets), use Git LFS:"
-  echo "      git lfs track '*.extension'"
-  echo "      git add .gitattributes"
-  echo "  - For generated or build artifacts, add the file to .gitignore."
-  echo "  - For large data files, consider an external storage solution"
-  echo "    (S3, Google Drive, etc.) and store only a reference in the repo."
-  echo ""
+  echo "" >&2
+  echo "BLOCKED: One or more staged files exceed the 500KB size limit." >&2
+  echo "" >&2
+  echo "Oversized files:" >&2
+  printf "%b" "$BLOCKED_FILES" >&2
+  echo "" >&2
+  echo "Guidance:" >&2
+  echo "  - For large binary assets (images, models, datasets), use Git LFS:" >&2
+  echo "      git lfs track '*.extension'" >&2
+  echo "      git add .gitattributes" >&2
+  echo "  - For generated or build artifacts, add the file to .gitignore." >&2
+  echo "  - For large data files, consider an external storage solution" >&2
+  echo "    (S3, Google Drive, etc.) and store only a reference in the repo." >&2
+  echo "" >&2
   exit 2
 fi
 
