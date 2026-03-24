@@ -7,3 +7,6 @@
 !.env.example
 !.env.template
 !.env.sample
+
+# Test temp directories
+tests/.tmp-*
