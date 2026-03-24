@@ -14,10 +14,8 @@ if [ "$TOOL_NAME" != "Write" ] && [ "$TOOL_NAME" != "Edit" ]; then
   exit 0
 fi
 
-# Count files with unstaged or staged changes
-CHANGED_COUNT=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
-STAGED_COUNT=$(git diff --cached --name-only 2>/dev/null | wc -l | tr -d ' ')
-TOTAL=$(( CHANGED_COUNT + STAGED_COUNT ))
+# Count unique files with unstaged or staged changes (deduplicated)
+TOTAL=$({ git diff --name-only 2>/dev/null; git diff --cached --name-only 2>/dev/null; } | sort -u | wc -l | tr -d ' ')
 
 if [ "$TOTAL" -ge "$THRESHOLD" ]; then
   echo ""
